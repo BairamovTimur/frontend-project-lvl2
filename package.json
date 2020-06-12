@@ -1,0 +1,25 @@
+{
+  "name": "frontend-project-lvl2",
+  "version": "1.0.0",
+  "description": "difference calculator",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "bin": {
+    "gendiff": "bin/gendiff.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BairamovTimur/frontend-project-lvl2.git"
+  },
+  "author": "BairamovTM",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BairamovTimur/frontend-project-lvl2/issues"
+  },
+  "homepage": "https://github.com/BairamovTimur/frontend-project-lvl2#readme",
+  "dependencies": {
+    "commander": "^5.1.0"
+  }
+}
