@@ -1,4 +1,4 @@
-# BrainGames
+# Difference calculator
 
 ## Description
 
