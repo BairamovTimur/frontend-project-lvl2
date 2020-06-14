@@ -16,7 +16,9 @@ const getObjFromFile = (pathToFile) => {
 };
 
 const getDiffObject = (dataBefore, dataAfter) => {
-  const allProperty = _.uniq(Object.keys(dataBefore).concat(Object.keys(dataAfter)));
+  const propertyBefore = Object.keys(dataBefore);
+  const propertyAfter = Object.keys(dataAfter);
+  const allProperty = _.uniq(propertyBefore.concat(propertyAfter));
 
   const diff = allProperty.map((property) => {
     if (!Object.prototype.hasOwnProperty.call(dataBefore, property)) {
