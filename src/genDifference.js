@@ -19,9 +19,8 @@ const getObjFromFile = (pathToFile) => {
   return parsers[format](data);
 };
 
-const buildTreeDiff = (obj1, obj2) => {
-  const keys = _.union(Object.keys(obj1), Object.keys(obj2));
-  const diff = keys.map((key) => {
+const buildTreeDiff = (before, after) => {
+  const getDiffProperty = (key, obj1, obj2) => {
     if (_.isObject(obj1[key]) && _.isObject(obj2[key])) {
       return { key, value: buildTreeDiff(obj1[key], obj2[key]), type: 'nested' };
     }
@@ -38,9 +37,9 @@ const buildTreeDiff = (obj1, obj2) => {
     return {
       key, addValue: obj2[key], delValue: obj1[key], type: 'changed',
     };
-  });
-
-  return diff;
+  };
+  return _.union(Object.keys(before), Object.keys(after))
+    .map((key) => getDiffProperty(key, before, after));
 };
 
 const getSpaces = (deep) => {
