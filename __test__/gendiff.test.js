@@ -1,26 +1,21 @@
-/* eslint-disable no-underscore-dangle */
 import { test, expect } from '@jest/globals';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import fs from 'fs';
 import getDiff from '../src/genDifference.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const getPath = (filename, format) => (
+  path.join('.', '__fixtures__', `${filename}.${format}`)
+);
 
-const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+let result;
 
-test('getDiff', () => {
-  const pathToFile1 = getFixturePath('before.json');
-  const pathToFile2 = getFixturePath('after.json');
-  const result = [
-    '{',
-    '  host: hexlet.io',
-    '+ timeout: 20',
-    '- timeout: 50',
-    '- proxy: 123.234.53.22',
-    '- follow: false',
-    '+ verbose: true',
-    '}',
-  ];
-  expect(getDiff(pathToFile1, pathToFile2)).toEqual(result.join('\n'));
+beforeAll(() => {
+  const pathToFile = getPath('result', 'txt');
+  result = fs.readFileSync(pathToFile, 'utf-8');
+});
+
+test.each(['json', 'yml', 'ini'])('getDiffTest', (format) => {
+  const pathToFile1 = getPath('before', format);
+  const pathToFile2 = getPath('after', format);
+  expect(getDiff(pathToFile1, pathToFile2)).toEqual(result);
 });
