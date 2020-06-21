@@ -19,24 +19,24 @@ const getObjFromFile = (pathToFile) => {
   return parsers[format](data);
 };
 
-const buildTreeDiff = (dataBefore, dataAfter) => {
-  const keysAll = _.union(Object.keys(dataBefore), Object.keys(dataAfter));
-  const diff = keysAll.map((key) => {
-    if (!Object.prototype.hasOwnProperty.call(dataBefore, key)) {
-      return { key, value: dataAfter[key], type: 'add' };
+const buildTreeDiff = (obj1, obj2) => {
+  const keys = _.union(Object.keys(obj1), Object.keys(obj2));
+  const diff = keys.map((key) => {
+    if (_.isObject(obj1[key]) && _.isObject(obj2[key])) {
+      return { key, value: buildTreeDiff(obj1[key], obj2[key]), type: 'nested' };
     }
-    if (!Object.prototype.hasOwnProperty.call(dataAfter, key)) {
-      return { key, value: dataBefore[key], type: 'del' };
+    if (!_.has(obj1, key)) {
+      return { key, value: obj2[key], type: 'add' };
     }
-    if (_.isObject(dataBefore[key]) && _.isObject(dataAfter[key])) {
-      return { key, value: buildTreeDiff(dataBefore[key], dataAfter[key]), type: 'nested' };
+    if (!_.has(obj2, key)) {
+      return { key, value: obj1[key], type: 'del' };
     }
-    if (dataBefore[key] === dataAfter[key]) {
-      return { key, value: dataBefore[key], type: 'equal' };
+    if (obj1[key] === obj2[key]) {
+      return { key, value: obj1[key], type: 'equal' };
     }
 
     return {
-      key, addValue: dataAfter[key], delValue: dataBefore[key], type: 'changed',
+      key, addValue: obj2[key], delValue: obj1[key], type: 'changed',
     };
   });
 
