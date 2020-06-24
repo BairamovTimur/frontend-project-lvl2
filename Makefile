@@ -10,8 +10,11 @@ lint:
 gendiff:
 	node bin/gendiff.js
 
-gd:
-	node bin/gendiff.js '../test_lvl2/config_test/before.json' '../test_lvl2/config_test/after.json'
+gds:
+	node bin/gendiff.js -f stylish './__fixtures__/before.json' './__fixtures__/after.json'
+
+gdp:
+	node bin/gendiff.js -f plain './__fixtures__/before.json' './__fixtures__/after.json'
 
 test:
 	npm test

@@ -7,7 +7,7 @@ program.version('0.0.0.1')
   .description('Compares two configuration files and shows a difference')
   .option('-f, --format [type]', 'output format', 'stylish')
   .action((pathtoFile1, pathtoFile2) => {
-    const diff = getDiff(pathtoFile1, pathtoFile2);
+    const diff = getDiff(pathtoFile1, pathtoFile2, program.format);
     console.log(diff);
   })
   .parse(process.argv);

@@ -7,15 +7,13 @@ const getPath = (filename, format) => (
   path.join('.', '__fixtures__', `${filename}.${format}`)
 );
 
-let result;
+describe.each(['stylish', 'plain', 'json'])('%s format', (presentFormat) => {
+  const pathToFile = getPath(`${presentFormat}Result`, 'txt');
+  const result = fs.readFileSync(pathToFile, 'utf-8');
 
-beforeAll(() => {
-  const pathToFile = getPath('result', 'txt');
-  result = fs.readFileSync(pathToFile, 'utf-8');
-});
-
-test.each(['json', 'yml', 'ini'])('getDiffTest', (format) => {
-  const pathToFile1 = getPath('before', format);
-  const pathToFile2 = getPath('after', format);
-  expect(getDiff(pathToFile1, pathToFile2)).toEqual(result);
+  test.each(['json', 'yml', 'ini'])('getDiffTest', (format) => {
+    const pathToFile1 = getPath('before', format);
+    const pathToFile2 = getPath('after', format);
+    expect(getDiff(pathToFile1, pathToFile2, presentFormat)).toEqual(result);
+  });
 });
