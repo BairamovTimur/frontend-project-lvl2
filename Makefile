@@ -7,15 +7,6 @@ publish:
 lint:
 	npx eslint .
 
-gendiff:
-	node bin/gendiff.js
-
-gds:
-	node bin/gendiff.js -f stylish './__fixtures__/before.json' './__fixtures__/after.json'
-
-gdp:
-	node bin/gendiff.js -f plain './__fixtures__/before.json' './__fixtures__/after.json'
-
 test:
 	npm test
 
