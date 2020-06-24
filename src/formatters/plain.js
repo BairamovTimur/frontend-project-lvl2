@@ -35,7 +35,7 @@ const plainFormatter = (diff, pathProperty = '') => diff
     const separator = pathProperty === '' ? '' : '.';
     const propertyElement = `${pathProperty}${separator}${element.key}`;
     if (element.type === 'nested') {
-      return plainFormatter(element.value, propertyElement);
+      return plainFormatter(element.children, propertyElement);
     }
     return getTextLine(element, propertyElement);
   })

@@ -45,7 +45,7 @@ const stylishFormatter = (diff, deep = 0) => {
 
         return [del, add];
       }
-      const useValue = element.type === 'nested' ? stylishFormatter(element.value, deep + 1) : element.value;
+      const useValue = element.type === 'nested' ? stylishFormatter(element.children, deep + 1) : element.value;
 
       return getTextLine(element.key, useValue, element.type, deep);
     }).join('\n');
