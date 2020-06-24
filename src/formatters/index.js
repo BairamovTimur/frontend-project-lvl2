@@ -1,7 +1,7 @@
-import _ from 'lodash';
 import stylishFormatter from './stylish.js';
 import plainFormatter from './plain.js';
 import jsonFormatter from './json.js';
+import getFunction from '../helpers.js';
 
 const formatters = {
   stylish: stylishFormatter,
@@ -10,10 +10,10 @@ const formatters = {
 };
 
 const formatting = (data, format) => {
-  if (!_.has(formatters, format)) {
-    throw new Error(`Unknown format '${format}'`);
-  }
-  return formatters[format](data);
+  const errorText = 'Unknown format';
+  const func = getFunction(formatters, format, errorText);
+
+  return func(data);
 };
 
 export default formatting;

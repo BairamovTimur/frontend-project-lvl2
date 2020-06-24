@@ -1,7 +1,7 @@
-import _ from 'lodash';
 import parseIni from './ini.js';
 import parseJson from './json.js';
 import parseYaml from './yaml.js';
+import getFunction from '../helpers.js';
 
 const parsers = {
   json: parseJson,
@@ -9,11 +9,11 @@ const parsers = {
   ini: parseIni,
 };
 
-const parse = (data, formatFile) => {
-  if (!_.has(parsers, formatFile)) {
-    throw new Error(`Unknown format file '${formatFile}'`);
-  }
-  return parsers[formatFile](data);
+const parse = (data, format) => {
+  const errorText = 'Unknown format file';
+  const func = getFunction(parsers, format, errorText);
+
+  return func(data);
 };
 
 export default parse;

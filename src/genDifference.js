@@ -37,11 +37,11 @@ const buildTreeDiff = (obj1, obj2) => _.union(Object.keys(obj1), Object.keys(obj
     return getDiffProperty(key, obj1, obj2);
   });
 
-const getDiff = (pathToFile1, pathToFile2, format) => {
+const genDifference = (pathToFile1, pathToFile2, format) => {
   const data1 = getObjFromFile(pathToFile1);
   const data2 = getObjFromFile(pathToFile2);
   const diff = buildTreeDiff(data1, data2);
   return formatting(diff, format);
 };
 
-export default getDiff;
+export default genDifference;
