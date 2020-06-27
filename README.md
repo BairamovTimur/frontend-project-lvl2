@@ -1,4 +1,4 @@
-# BrainGames
+# Difference calculator
 
 ## Description
 
@@ -15,6 +15,15 @@
 
 # Demo
 
+## Diff json files
+[![asciicast](https://asciinema.org/a/342401.svg)](https://asciinema.org/a/342401)
+
+## Diff yaml files
+[![asciicast](https://asciinema.org/a/342414.svg)](https://asciinema.org/a/342414)
+
+## Diff ini files
+[![asciicast](https://asciinema.org/a/342423.svg)](https://asciinema.org/a/342423)
+
 # Install
 
 ```bash
@@ -28,3 +37,6 @@ make install
 - `make install` - Install dependences
 - `make publish` - Publish project
 - `make lint` - Start lint
+- `make test` - Start tests
+- `test-watch` - Start test watch mode
+- `test-coverage` - Start test coverage mode
