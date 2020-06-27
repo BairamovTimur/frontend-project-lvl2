@@ -17,11 +17,13 @@ const presentValue = (value, deep) => {
   if (!_.isObject(value)) {
     return value;
   }
+
   const present = Object.entries(value)
     .map(([key, val]) => {
       const presValue = presentValue(val, deep);
       return `${key}: ${presValue}`;
-    }).join('/n');
+    }).join('\n');
+
   const indent = getSpaces(deep);
 
   return `{\n  ${indent}${prefixes.equal}${present}\n${indent}}`;

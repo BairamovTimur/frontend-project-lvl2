@@ -1,16 +1,30 @@
-import program from 'commander';
-import genDifference from './genDifference.js';
+import fs from 'fs';
+import path from 'path';
+import formatting from './formatters/index.js';
+import parse from './parsers/index.js';
+import buildTreeDiff from './buildTreeDiff.js';
 
-const getDiff = () => {
-  program.version('0.0.0.1')
-    .arguments('<firstConfig> <secondConfig>')
-    .description('Compares two configuration files and shows a difference')
-    .option('-f, --format [type]', 'output format', 'stylish')
-    .action((pathtoFile1, pathtoFile2) => {
-      const diff = genDifference(pathtoFile1, pathtoFile2, program.format);
-      console.log(diff);
-    })
-    .parse(process.argv);
+const getFullPath = (pathToFile) => {
+  const pathToFileNormalize = path.normalize(pathToFile);
+
+  return path.resolve(pathToFileNormalize);
 };
 
-export default getDiff;
+const getFormat = (pathToFile) => path.extname(pathToFile).slice(1);
+
+const getData = (pathToFile) => {
+  const pathAbsolute = getFullPath(pathToFile);
+  const data = fs.readFileSync(pathAbsolute, 'utf-8');
+
+  return parse(data, getFormat(pathAbsolute));
+};
+
+const genDiff = (pathToFile1, pathToFile2, format) => {
+  const data1 = getData(pathToFile1);
+  const data2 = getData(pathToFile2);
+  const diff = buildTreeDiff(data1, data2);
+
+  return formatting(diff, format);
+};
+
+export default genDiff;
