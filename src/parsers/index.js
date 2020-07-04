@@ -1,19 +1,19 @@
+import _ from 'lodash';
+import yaml from 'js-yaml';
 import parseIni from './ini.js';
-import parseJson from './json.js';
-import parseYaml from './yaml.js';
-import getFunction from '../helpers.js';
 
 const parsers = {
-  json: parseJson,
-  yml: parseYaml,
+  json: JSON.parse,
+  yml: yaml.safeLoad,
   ini: parseIni,
 };
 
-const parse = (data, format) => {
-  const errorText = 'Unknown format file';
-  const func = getFunction(parsers, format, errorText);
+const parse = (data, formatData) => {
+  if (!_.has(parsers, formatData)) {
+    throw new Error(`Unknown format data '${formatData}'`);
+  }
 
-  return func(data);
+  return parsers[formatData](data);
 };
 
 export default parse;

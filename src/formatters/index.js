@@ -1,19 +1,19 @@
-import stylishFormatter from './stylish.js';
-import plainFormatter from './plain.js';
-import jsonFormatter from './json.js';
-import getFunction from '../helpers.js';
+import _ from 'lodash';
+import formattingStylish from './stylish.js';
+import formattingPlain from './plain.js';
 
 const formatters = {
-  stylish: stylishFormatter,
-  plain: plainFormatter,
-  json: jsonFormatter,
+  stylish: formattingStylish,
+  plain: formattingPlain,
+  json: JSON.stringify,
 };
 
 const formatting = (data, format) => {
-  const errorText = 'Unknown format';
-  const func = getFunction(formatters, format, errorText);
+  if (!_.has(formatters, format)) {
+    throw new Error(`Unknown format '${format}'`);
+  }
 
-  return func(data);
+  return formatters[format](data);
 };
 
 export default formatting;

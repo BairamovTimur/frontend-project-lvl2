@@ -1,53 +1,53 @@
 import _ from 'lodash';
 
-const isNumberOrBoolean = (value) => Number.isNaN(Number(value));
-
 const presentValue = (value) => {
   if (_.isObject(value)) {
     return '[complex value]';
   }
 
-  if (isNumberOrBoolean(value)) {
-    return `'${value}'`;
-  }
-
-  return value;
+  return _.isString(value) ? `'${value}'` : value;
 };
 
-const getStartedLine = (property) => `Property '${property}' was`;
+const getPathPropertyElement = (pathProperty, key) => {
+  const separator = pathProperty === '' ? '' : '.';
+  return `${pathProperty}${separator}${key}`;
+};
 
 const getTextLine = (element, property) => {
   switch (element.type) {
     case 'changed': {
-      const addValue = presentValue(element.addValue);
-      const delValue = presentValue(element.delValue);
+      const addedValue = presentValue(element.addedValue);
+      const deletedValue = presentValue(element.deletedValue);
 
-      return `${getStartedLine(property)} changed from ${delValue} to ${addValue}`;
+      return `Property '${property}' was changed from ${deletedValue} to ${addedValue}`;
     }
-    case 'add': {
+    case 'added': {
       const value = presentValue(element.value);
 
-      return `${getStartedLine(property)} added with value: ${value}`;
+      return `Property '${property}' was added with value: ${value}`;
     }
-    case 'del':
-      return `${getStartedLine(property)} deleted`;
-    default:
+    case 'deleted':
+      return `Property '${property}' was deleted`;
+    case 'equal':
       return '';
+    default:
+      throw new Error(`Unknown element type: '${element.type}'!`);
   }
 };
 
-const plainFormatter = (diff, pathProperty = '') => diff
+const stringifyDiff = (diff, pathProperty) => diff
   .map((element) => {
-    const separator = pathProperty === '' ? '' : '.';
-    const propertyElement = `${pathProperty}${separator}${element.key}`;
+    const pathPropertyElement = getPathPropertyElement(pathProperty, element.key);
 
     if (element.type === 'nested') {
-      return plainFormatter(element.children, propertyElement);
+      return stringifyDiff(element.children, pathPropertyElement);
     }
 
-    return getTextLine(element, propertyElement);
+    return getTextLine(element, pathPropertyElement);
   })
   .filter((element) => element !== '')
   .join('\n');
 
-export default plainFormatter;
+const formattingPlain = (diff) => stringifyDiff(diff, '');
+
+export default formattingPlain;

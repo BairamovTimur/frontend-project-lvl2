@@ -2,17 +2,17 @@ import _ from 'lodash';
 
 const getDiffProperty = (key, obj1, obj2) => {
   if (!_.has(obj1, key)) {
-    return { key, value: obj2[key], type: 'add' };
+    return { key, value: obj2[key], type: 'added' };
   }
   if (!_.has(obj2, key)) {
-    return { key, value: obj1[key], type: 'del' };
+    return { key, value: obj1[key], type: 'deleted' };
   }
   if (obj1[key] === obj2[key]) {
     return { key, value: obj1[key], type: 'equal' };
   }
 
   return {
-    key, addValue: obj2[key], delValue: obj1[key], type: 'changed',
+    key, addedValue: obj2[key], deletedValue: obj1[key], type: 'changed',
   };
 };
 
