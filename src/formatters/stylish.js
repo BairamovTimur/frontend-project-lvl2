@@ -1,58 +1,80 @@
 import _ from 'lodash';
 
-const getSpaces = (deep) => {
+const getSpaces = (depth) => {
   const indentToLevel = 4;
 
-  return ' '.repeat(deep * indentToLevel);
+  return ' '.repeat(depth * indentToLevel);
 };
 
 const prefixes = {
-  add: '+ ',
-  del: '- ',
+  added: '+ ',
+  deleted: '- ',
   equal: '  ',
   nested: '  ',
 };
 
-const presentValue = (value, deep) => {
+const presentValue = (value, depth) => {
   if (!_.isObject(value)) {
     return value;
   }
 
   const present = Object.entries(value)
     .map(([key, val]) => {
-      const presValue = presentValue(val, deep);
+      const presValue = presentValue(val, depth);
       return `${key}: ${presValue}`;
     }).join('\n');
 
-  const indent = getSpaces(deep);
+  const indent = getSpaces(depth);
 
-  return `{\n  ${indent}${prefixes.equal}${present}\n${indent}}`;
+  return `{\n  ${indent}  ${present}\n${indent}}`;
 };
 
-const getTextLine = (key, value, type, deep) => {
+const getTextLine = (key, value, type, depth) => {
   const prefix = prefixes[type];
-  const indent = getSpaces(deep);
-  const valuePresent = presentValue(value, deep + 1);
+  const indent = getSpaces(depth);
+  const valuePresent = presentValue(value, depth + 1);
 
   return `  ${indent}${prefix}${key}: ${valuePresent}`;
 };
 
-const stylishFormatter = (diff, deep = 0) => {
-  const indent = getSpaces(deep);
-  const result = diff
-    .flatMap((element) => {
-      if (element.type === 'changed') {
-        const add = getTextLine(element.key, element.addValue, 'add', deep);
-        const del = getTextLine(element.key, element.delValue, 'del', deep);
+const stringifyNode = (element, depth) => {
+  switch (element.type) {
+    case 'changed': {
+      const added = getTextLine(element.key, element.addedValue, 'added', depth);
+      const deleted = getTextLine(element.key, element.deletedValue, 'deleted', depth);
 
-        return [del, add];
-      }
-      const useValue = element.type === 'nested' ? stylishFormatter(element.children, deep + 1) : element.value;
-
-      return getTextLine(element.key, useValue, element.type, deep);
-    }).join('\n');
-
-  return `{\n${result}\n${indent}}`;
+      return `${deleted}\n${added}`;
+    }
+    case 'added': {
+      return getTextLine(element.key, element.value, element.type, depth);
+    }
+    case 'deleted':
+      return getTextLine(element.key, element.value, element.type, depth);
+    case 'equal':
+      return getTextLine(element.key, element.value, element.type, depth);
+    default:
+      throw new Error(`Unknown element type: '${element.type}'!`);
+  }
 };
 
-export default stylishFormatter;
+const formattingStylish = (diff) => {
+  const iter = (difference, depth = 0) => {
+    const indent = getSpaces(depth);
+    const result = difference
+      .flatMap((element) => {
+        if (element.type === 'nested') {
+          const presentChildren = iter(element.children, depth + 1);
+
+          return getTextLine(element.key, presentChildren, element.type, depth);
+        }
+
+        return stringifyNode(element, depth);
+      }).join('\n');
+
+    return `{\n${result}\n${indent}}`;
+  };
+
+  return iter(diff);
+};
+
+export default formattingStylish;

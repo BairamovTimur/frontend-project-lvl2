@@ -1,53 +1,51 @@
 import _ from 'lodash';
 
-const isNumberOrBoolean = (value) => Number.isNaN(Number(value));
-
 const presentValue = (value) => {
   if (_.isObject(value)) {
     return '[complex value]';
   }
 
-  if (isNumberOrBoolean(value)) {
-    return `'${value}'`;
-  }
-
-  return value;
+  return _.isString(value) ? `'${value}'` : value;
 };
-
-const getStartedLine = (property) => `Property '${property}' was`;
 
 const getTextLine = (element, property) => {
   switch (element.type) {
     case 'changed': {
-      const addValue = presentValue(element.addValue);
-      const delValue = presentValue(element.delValue);
+      const addedValue = presentValue(element.addedValue);
+      const deletedValue = presentValue(element.deletedValue);
 
-      return `${getStartedLine(property)} changed from ${delValue} to ${addValue}`;
+      return `Property '${property}' was changed from ${deletedValue} to ${addedValue}`;
     }
-    case 'add': {
+    case 'added': {
       const value = presentValue(element.value);
 
-      return `${getStartedLine(property)} added with value: ${value}`;
+      return `Property '${property}' was added with value: ${value}`;
     }
-    case 'del':
-      return `${getStartedLine(property)} deleted`;
-    default:
+    case 'deleted':
+      return `Property '${property}' was deleted`;
+    case 'equal':
       return '';
+    default:
+      throw new Error(`Unknown element type: '${element.type}'!`);
   }
 };
 
-const plainFormatter = (diff, pathProperty = '') => diff
-  .map((element) => {
-    const separator = pathProperty === '' ? '' : '.';
-    const propertyElement = `${pathProperty}${separator}${element.key}`;
+const formattingPlain = (diff) => {
+  const iter = (difference, pathProperty) => difference
+    .map((element) => {
+      const separator = pathProperty === '' ? '' : '.';
+      const propertyElement = `${pathProperty}${separator}${element.key}`;
 
-    if (element.type === 'nested') {
-      return plainFormatter(element.children, propertyElement);
-    }
+      if (element.type === 'nested') {
+        return iter(element.children, propertyElement);
+      }
 
-    return getTextLine(element, propertyElement);
-  })
-  .filter((element) => element !== '')
-  .join('\n');
+      return getTextLine(element, propertyElement);
+    })
+    .filter((element) => element !== '')
+    .join('\n');
 
-export default plainFormatter;
+  return iter(diff, '');
+};
+
+export default formattingPlain;
