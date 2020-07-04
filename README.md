@@ -11,7 +11,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/5e5377abed61ed2d9a19/maintainability)](https://codeclimate.com/github/BairamovTimur/frontend-project-lvl2/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/5e5377abed61ed2d9a19/test_coverage)](https://codeclimate.com/github/BairamovTimur/frontend-project-lvl2/test_coverage)
 
 ## Github Actions
-[![Node CI](https://github.com/BairamovTimur/frontend-project-lvl1/workflows/ESLint%20verification/badge.svg?branch=master)](https://github.com/BairamovTimur/frontend-project-lvl1/actions?query=workflow%3A%22ESLint+verification%22)
+![Node CI (https://github.com/BairamovTimur/frontend-project-lvl2/actions?query=workflow%3A%22Node+CI%22)](https://github.com/BairamovTimur/frontend-project-lvl2/workflows/Node%20CI/badge.svg)
 
 # Demo
 
