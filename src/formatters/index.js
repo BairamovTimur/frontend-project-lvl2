@@ -9,14 +9,11 @@ const formatters = {
 };
 
 const formatting = (data, format) => {
-  const errorText = 'Unknown format';
-
   if (!_.has(formatters, format)) {
-    throw new Error(`${errorText} '${format}'`);
+    throw new Error(`Unknown format '${format}'`);
   }
 
   return formatters[format](data);
-
 };
 
 export default formatting;

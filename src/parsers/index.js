@@ -8,14 +8,12 @@ const parsers = {
   ini: parseIni,
 };
 
-const parse = (data, format) => {
-  const errorText = 'Unknown format data';
-
-  if (!_.has(parsers, format)) {
-    throw new Error(`${errorText} '${format}'`);
+const parse = (data, formatData) => {
+  if (!_.has(parsers, formatData)) {
+    throw new Error(`Unknown format data '${formatData}'`);
   }
 
-  return parsers[format](data);
+  return parsers[formatData](data);
 };
 
 export default parse;

@@ -8,6 +8,11 @@ const presentValue = (value) => {
   return _.isString(value) ? `'${value}'` : value;
 };
 
+const getPathPropertyElement = (pathProperty, key) => {
+  const separator = pathProperty === '' ? '' : '.';
+  return `${pathProperty}${separator}${key}`;
+};
+
 const getTextLine = (element, property) => {
   switch (element.type) {
     case 'changed': {
@@ -30,22 +35,19 @@ const getTextLine = (element, property) => {
   }
 };
 
-const formattingPlain = (diff) => {
-  const iter = (difference, pathProperty) => difference
-    .map((element) => {
-      const separator = pathProperty === '' ? '' : '.';
-      const propertyElement = `${pathProperty}${separator}${element.key}`;
+const stringifyDiff = (diff, pathProperty) => diff
+  .map((element) => {
+    const pathPropertyElement = getPathPropertyElement(pathProperty, element.key);
 
-      if (element.type === 'nested') {
-        return iter(element.children, propertyElement);
-      }
+    if (element.type === 'nested') {
+      return stringifyDiff(element.children, pathPropertyElement);
+    }
 
-      return getTextLine(element, propertyElement);
-    })
-    .filter((element) => element !== '')
-    .join('\n');
+    return getTextLine(element, pathPropertyElement);
+  })
+  .filter((element) => element !== '')
+  .join('\n');
 
-  return iter(diff, '');
-};
+const formattingPlain = (diff) => stringifyDiff(diff, '');
 
 export default formattingPlain;

@@ -57,24 +57,22 @@ const stringifyNode = (element, depth) => {
   }
 };
 
-const formattingStylish = (diff) => {
-  const iter = (difference, depth = 0) => {
-    const indent = getSpaces(depth);
-    const result = difference
-      .flatMap((element) => {
-        if (element.type === 'nested') {
-          const presentChildren = iter(element.children, depth + 1);
+const stringifyDiff = (diff, depth = 0) => {
+  const indent = getSpaces(depth);
+  const result = diff
+    .map((element) => {
+      if (element.type === 'nested') {
+        const presentChildren = stringifyDiff(element.children, depth + 1);
 
-          return getTextLine(element.key, presentChildren, element.type, depth);
-        }
+        return getTextLine(element.key, presentChildren, element.type, depth);
+      }
 
-        return stringifyNode(element, depth);
-      }).join('\n');
+      return stringifyNode(element, depth);
+    }).join('\n');
 
-    return `{\n${result}\n${indent}}`;
-  };
-
-  return iter(diff);
+  return `{\n${result}\n${indent}}`;
 };
+
+const formattingStylish = (diff) => stringifyDiff(diff);
 
 export default formattingStylish;
