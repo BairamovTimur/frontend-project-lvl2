@@ -1,9 +1,20 @@
-import _ from 'lodash';
-
 const getSpaces = (depth) => {
   const indentToLevel = 4;
 
   return ' '.repeat(depth * indentToLevel);
+};
+
+const stringifyValue = (value, depth) => {
+  if (typeof (value) !== 'object') {
+    return value;
+  }
+
+  const presentation = Object.entries(value)
+    .map(([key, val]) => `${key}: ${stringifyValue(val, depth)}`)
+    .join('\n');
+  const indent = getSpaces(depth);
+
+  return `{\n  ${indent}  ${presentation}\n${indent}}`;
 };
 
 const prefixes = {
@@ -13,66 +24,37 @@ const prefixes = {
   nested: '  ',
 };
 
-const presentValue = (value, depth) => {
-  if (!_.isObject(value)) {
-    return value;
-  }
-
-  const present = Object.entries(value)
-    .map(([key, val]) => {
-      const presValue = presentValue(val, depth);
-      return `${key}: ${presValue}`;
-    }).join('\n');
-
-  const indent = getSpaces(depth);
-
-  return `{\n  ${indent}  ${present}\n${indent}}`;
-};
-
-const getTextLine = (key, value, type, depth) => {
+const getLine = (key, value, type, depth) => {
   const prefix = prefixes[type];
   const indent = getSpaces(depth);
-  const valuePresent = presentValue(value, depth + 1);
-
-  return `  ${indent}${prefix}${key}: ${valuePresent}`;
+  return `  ${indent}${prefix}${key}: ${stringifyValue(value, depth + 1)}`;
 };
 
-const stringifyNode = (element, depth) => {
-  switch (element.type) {
-    case 'changed': {
-      const added = getTextLine(element.key, element.addedValue, 'added', depth);
-      const deleted = getTextLine(element.key, element.deletedValue, 'deleted', depth);
+const mapping = {
+  nested: (node, depth, iter) => {
+    const presentChildren = iter(node.children, depth + 1);
 
-      return `${deleted}\n${added}`;
-    }
-    case 'added': {
-      return getTextLine(element.key, element.value, element.type, depth);
-    }
-    case 'deleted':
-      return getTextLine(element.key, element.value, element.type, depth);
-    case 'equal':
-      return getTextLine(element.key, element.value, element.type, depth);
-    default:
-      throw new Error(`Unknown element type: '${element.type}'!`);
-  }
+    return getLine(node.key, presentChildren, node.type, depth);
+  },
+  changed: (node, depth) => {
+    const added = getLine(node.key, node.addedValue, 'added', depth);
+    const deleted = getLine(node.key, node.deletedValue, 'deleted', depth);
+
+    return `${deleted}\n${added}`;
+  },
+  added: (node, depth) => getLine(node.key, node.value, node.type, depth),
+  deleted: (node, depth) => getLine(node.key, node.value, node.type, depth),
+  equal: (node, depth) => getLine(node.key, node.value, node.type, depth),
 };
 
-const stringifyDiff = (diff, depth = 0) => {
+const iter = (diff, depth = 0) => {
   const indent = getSpaces(depth);
   const result = diff
-    .map((element) => {
-      if (element.type === 'nested') {
-        const presentChildren = stringifyDiff(element.children, depth + 1);
-
-        return getTextLine(element.key, presentChildren, element.type, depth);
-      }
-
-      return stringifyNode(element, depth);
-    }).join('\n');
+    .map((node) => mapping[node.type](node, depth, iter)).join('\n');
 
   return `{\n${result}\n${indent}}`;
 };
 
-const formattingStylish = (diff) => stringifyDiff(diff);
+const formattingStylish = (diff) => iter(diff);
 
 export default formattingStylish;
