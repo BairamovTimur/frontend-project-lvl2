@@ -1,19 +1,19 @@
 import _ from 'lodash';
-import formattingStylish from './stylish.js';
-import formattingPlain from './plain.js';
+import formatStylish from './stylish.js';
+import formatPlain from './plain.js';
 
 const formatters = {
-  stylish: formattingStylish,
-  plain: formattingPlain,
+  stylish: formatStylish,
+  plain: formatPlain,
   json: JSON.stringify,
 };
 
-const formatting = (data, format) => {
-  if (!_.has(formatters, format)) {
-    throw new Error(`Unknown format '${format}'`);
+const format = (data, outputFormat) => {
+  if (!_.has(formatters, outputFormat)) {
+    throw new Error(`Unknown format '${outputFormat}'`);
   }
 
-  return formatters[format](data);
+  return formatters[outputFormat](data);
 };
 
-export default formatting;
+export default format;

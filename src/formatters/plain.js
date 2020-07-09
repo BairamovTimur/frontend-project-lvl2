@@ -24,14 +24,14 @@ const mapping = {
     return `Property '${getPropertyName(path, node.key)}' was added with value: ${value}`;
   },
   deleted: (node, path) => `Property '${getPropertyName(path, node.key)}' was deleted`,
-  equal: () => '',
+  equal: () => null,
 };
 
 const iter = (diff, path) => diff
   .map((node) => mapping[node.type](node, path, iter))
-  .filter((node) => node !== '')
+  .filter((node) => node !== null)
   .join('\n');
 
-const formattingPlain = (diff) => iter(diff, []);
+const formatPlain = (diff) => iter(diff, []);
 
-export default formattingPlain;
+export default formatPlain;
