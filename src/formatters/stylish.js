@@ -17,16 +17,9 @@ const stringifyValue = (value, depth) => {
   return `{\n  ${indent}  ${presentation}\n${indent}}`;
 };
 
-const prefixes = {
-  added: '+ ',
-  deleted: '- ',
-  equal: '  ',
-  nested: '  ',
-};
-
-const getLine = (key, value, type, depth) => {
-  const prefix = prefixes[type];
+const getLine = (key, value, prefix, depth) => {
   const indent = getSpaces(depth);
+
   return `  ${indent}${prefix}${key}: ${stringifyValue(value, depth + 1)}`;
 };
 
@@ -34,17 +27,17 @@ const mapping = {
   nested: (node, depth, iter) => {
     const presentChildren = iter(node.children, depth + 1);
 
-    return getLine(node.key, presentChildren, node.type, depth);
+    return getLine(node.key, presentChildren, '  ', depth);
   },
   changed: (node, depth) => {
-    const added = getLine(node.key, node.addedValue, 'added', depth);
-    const deleted = getLine(node.key, node.deletedValue, 'deleted', depth);
+    const added = getLine(node.key, node.addedValue, '+ ', depth);
+    const deleted = getLine(node.key, node.deletedValue, '- ', depth);
 
     return `${deleted}\n${added}`;
   },
-  added: (node, depth) => getLine(node.key, node.value, node.type, depth),
-  deleted: (node, depth) => getLine(node.key, node.value, node.type, depth),
-  equal: (node, depth) => getLine(node.key, node.value, node.type, depth),
+  added: (node, depth) => getLine(node.key, node.value, '+ ', depth),
+  deleted: (node, depth) => getLine(node.key, node.value, '- ', depth),
+  equal: (node, depth) => getLine(node.key, node.value, '  ', depth),
 };
 
 const iter = (diff, depth = 0) => {
@@ -55,6 +48,6 @@ const iter = (diff, depth = 0) => {
   return `{\n${result}\n${indent}}`;
 };
 
-const formattingStylish = (diff) => iter(diff);
+const formatStylish = (diff) => iter(diff);
 
-export default formattingStylish;
+export default formatStylish;

@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import formatting from './formatters/index.js';
+import format from './formatters/index.js';
 import parse from './parsers/index.js';
 import buildTreeDiff from './buildTreeDiff.js';
 
@@ -19,12 +19,12 @@ const getData = (pathToFile) => {
   return parse(data, getFormat(pathAbsolute));
 };
 
-const genDiff = (pathToFile1, pathToFile2, format) => {
+const genDiff = (pathToFile1, pathToFile2, outputFormat) => {
   const data1 = getData(pathToFile1);
   const data2 = getData(pathToFile2);
   const diff = buildTreeDiff(data1, data2);
 
-  return formatting(diff, format);
+  return format(diff, outputFormat);
 };
 
 export default genDiff;
