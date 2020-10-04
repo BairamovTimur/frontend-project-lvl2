@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const getSpaces = (depth) => {
   const indentToLevel = 4;
 
@@ -5,7 +7,7 @@ const getSpaces = (depth) => {
 };
 
 const stringifyValue = (value, depth) => {
-  if (typeof (value) !== 'object') {
+  if (!_.isObject(value)) {
     return value;
   }
 
